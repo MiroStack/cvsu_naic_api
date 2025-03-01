@@ -72,7 +72,7 @@ public class SecurityConfig {
     public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of("http://127.0.0.1:5501", "https://cvsu-portal-weld.vercel.app")); // ✅ Adjust if needed
+        config.setAllowedOrigins(List.of("http://127.0.0.1:5501", "https://cvsu-portal-weld.vercel.app", "https://cvsu-map-godot.vercel.app")); // ✅ Adjust if needed
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
 

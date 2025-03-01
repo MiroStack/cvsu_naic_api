@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("cvsu")
-@CrossOrigin(origins = {"https://cvsu-portal-weld.vercel.app", "http://localhost:5501"})
+@CrossOrigin(origins = {"https://cvsu-portal-weld.vercel.app", "http://localhost:5501", "https://cvsu-map-godot.vercel.app"})
 public class BuildingAndRoomController {
     @Autowired
     BuildingAndRoomImpService buildingAndRoomImpService;

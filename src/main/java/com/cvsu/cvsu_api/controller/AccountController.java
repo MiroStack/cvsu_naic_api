@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = {"https://cvsu-portal-weld.vercel.app", "http://localhost:5501"})
+@CrossOrigin(origins = {"https://cvsu-portal-weld.vercel.app", "http://localhost:5501", "https://cvsu-map-godot.vercel.app"})
 @RestController
 @RequestMapping("cvsu")
 public class AccountController {
