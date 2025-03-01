@@ -28,12 +28,22 @@ public class JwtFilter extends OncePerRequestFilter {
     public JwtFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
     }
-
+    @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
 
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        String requestURI = httpRequest.getRequestURI();
+
+        if (requestURI.matches("^/cvsu/login(/.*)?$") || requestURI.matches("^/cvsu/displayBldgAndRooms(/.*)?$")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
+
         String token = extractToken(request);
         System.out.println("Extracted Token: " + token);
+
 
         if (token != null && jwtUtil.validateToken(token)) {
             Claims claims = jwtUtil.extractUserClaims(token);

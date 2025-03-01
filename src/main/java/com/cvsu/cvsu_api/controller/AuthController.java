@@ -16,7 +16,7 @@ import jakarta.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 
-@CrossOrigin(origins = "http://127.0.0.1:5500")
+@CrossOrigin(origins = {"https://cvsu-portal-weld.vercel.app", "http://localhost:5501"})
 @RestController
 @RequestMapping("cvsu")
 public class AuthController {
