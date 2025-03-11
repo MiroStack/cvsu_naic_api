@@ -1,22 +1,13 @@
 package com.cvsu.cvsu_api.model;
 
 
+import lombok.Data;
 
+@Data
 public class UserProfileModel {
-    public String getPassword() {
-        return password;
-    }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
-    private String password;
-    private String username;
-    private String roleName;
-    private String fullName;
-    private Long id;
-    private String position;
+
 
     public String getUsername() {
         return username;
@@ -26,15 +17,21 @@ public class UserProfileModel {
         this.username = username;
     }
 
-
-    public String getPosition() {
-        return position;
+    public String getRoleName() {
+        return roleName;
     }
 
-    public void setPosition(String position) {
-        this.position = position;
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
     }
 
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
 
     public Long getId() {
         return id;
@@ -44,23 +41,37 @@ public class UserProfileModel {
         this.id = id;
     }
 
-
-    public String getFullName() {
-        return fullName;
-    }
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public String getPosition() {
+        return position;
     }
 
-
-    public String getRoleName() {
-        return roleName;
+    public void setPosition(String position) {
+        this.position = position;
     }
 
-
-
-    public void setRoleName(String roleName) {
-        this.roleName = roleName;
+    public String getStatus() {
+        return status;
     }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    String password;
+     String username;
+     String roleName;
+     String fullName;
+     Long id;
+     String position;
+     String status;
+
 
 }

@@ -2,6 +2,8 @@ package com.cvsu.cvsu_api.controller;
 
 import com.cvsu.cvsu_api.entity.UserProfileEntity;
 import com.cvsu.cvsu_api.model.AuthModel;
+import com.cvsu.cvsu_api.model.AuthResponseModel;
+import com.cvsu.cvsu_api.model.ResponseModel;
 import com.cvsu.cvsu_api.model.UserProfileModel;
 import com.cvsu.cvsu_api.serviceImp.AuthServiceImp;
 import com.cvsu.cvsu_api.utl.JwtUtil;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpSession;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @CrossOrigin(origins = {"https://cvsu-portal-weld.vercel.app", "http://localhost:5501", "https://cvsu-map-godot.vercel.app"})
@@ -31,16 +34,12 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthModel model) {
+    public ResponseEntity<AuthResponseModel> login(@RequestBody AuthModel model) {
         try {
-            UserProfileModel user = authServiceImp.login(model.getUsername(), model.getPassword());
-            if (user == null) {
-                return ResponseEntity.status(401).body("Invalid username or password");
-            }
-            String token = jwtUtil.generateToken(user);
-            return ResponseEntity.ok(token);
+
+            return new ResponseEntity<AuthResponseModel>(authServiceImp.login(model.getUsername(), model.getPassword()), HttpStatus.OK);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("Login failed: " + e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -59,7 +58,7 @@ public class AuthController {
         String position = claims.get("position", String.class);
         Long id = claims.get("id", Long.class);
         String username = claims.get("username", String.class);
-        String password = claims.get("password", String.class);
+
 
 
         // ✅ Return full user info
@@ -70,6 +69,24 @@ public class AuthController {
         userInfo.put("id", id);
         userInfo.put("username", username);
         return ResponseEntity.ok(userInfo);
+    }
+
+    @GetMapping("fetchUsers")
+    public ResponseEntity<List<UserProfileModel>> fetchUsers(@RequestParam String position){
+        try{
+            return new ResponseEntity<List<UserProfileModel>>(authServiceImp.fetchUser(position), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<List<UserProfileModel>>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping("updateStatus")
+    public ResponseEntity<ResponseModel> updateStatus(@RequestParam Long id){
+        try{
+            return new ResponseEntity<ResponseModel>(authServiceImp.updateStatus(id),HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<ResponseModel>(HttpStatus.BAD_REQUEST);
+        }
     }
 
 }

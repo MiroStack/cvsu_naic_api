@@ -31,9 +31,9 @@ public class AccountController {
             @RequestParam  String lastname,
             @RequestParam  String username,
             @RequestParam  String password,
-            @RequestParam   Long createdById,
-            @RequestParam  boolean canCreateAccount) {
-       return new ResponseEntity<ResponseModel>(accountServiceImp.addAccount(firstname, middlename, lastname, username, password, createdById, canCreateAccount), HttpStatus.OK);
+            @RequestParam   Long createdById
+           ) {
+       return new ResponseEntity<ResponseModel>(accountServiceImp.addAccount(firstname, middlename, lastname, username, password, createdById), HttpStatus.OK);
     }
     @PostMapping("/editAccount")
     public ResponseEntity<ResponseModel> editAccount(@RequestParam String username, @RequestParam String currentPassword, @RequestParam String password, @RequestParam Long id){

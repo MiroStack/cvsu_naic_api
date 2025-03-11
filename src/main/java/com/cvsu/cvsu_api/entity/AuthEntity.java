@@ -22,6 +22,19 @@ public class AuthEntity {
     @Column(name = "createdby_id")
     private Long createdById;
 
+    @Column(name = "status")
+    private String status;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+
+
     public Long getCreatedById() {
         return createdById;
     }

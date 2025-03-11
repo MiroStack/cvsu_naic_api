@@ -59,7 +59,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())  // ✅ Disable CSRF for API calls
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/cvsu/login/**", "/cvsu/displayBldgAndRooms/**", "/cvsu/displayAllBldgAndRooms/**", "/cvsu/validate/**").permitAll()
+                        .requestMatchers("/cvsu/login/**", "/cvsu/displayBldgAndRooms/**", "/cvsu/displayAllBldgAndRooms/**", "/cvsu/validate/**", "/cvsu/submitFeedback/**").permitAll()
                         .anyRequest().authenticated() // Secure all other endpoints
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -1,7 +1,10 @@
 package com.cvsu.cvsu_api.model;
 
-public class ResponseModel {
-    private String message;
+import lombok.Data;
+
+
+public class AuthResponseModel {
+    private boolean success;
 
     public boolean isSuccess() {
         return success;
@@ -27,8 +30,15 @@ public class ResponseModel {
         this.message = message;
     }
 
-    private boolean success;
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
     private int statusCode;
-
-
+    private String message;
+    private String token;
 }

@@ -33,24 +33,32 @@ public class AccountServiceImp implements AccountService {
     private BCryptPasswordEncoder passwordEncoder;
 
     @Override
-    public ResponseModel addAccount(String firstname, String middlename, String lastname, String username, String password, Long createdById, boolean canCreateAccount) {
+    public ResponseModel addAccount(String firstname, String middlename, String lastname, String username, String password, Long createdById) {
         ResponseModel res = new ResponseModel();
         try{
-            Optional<AuthEntity> creatorEntityOptional = authRepository.findById(createdById);
+            Optional<UserProfileEntity> creatorEntityOptional = userProfileRepository.findById(createdById);
+
             if(creatorEntityOptional.isPresent()){
-                AuthEntity creatorEntity = creatorEntityOptional.get();
-                if(creatorEntity.getRoleId() == 1){
-                    AuthEntity authEntity = new AuthEntity();
+                UserProfileEntity creatorEntity = creatorEntityOptional.get();
+                System.out.println(creatorEntity.getUserId());
+                Optional<AuthEntity> authEntityOptional = authRepository.findById(creatorEntity.getUserId());
+
+             if(authEntityOptional.isPresent()){
+                   AuthEntity creatorAuthEntity = authEntityOptional.get();
+                   AuthEntity authEntity = new AuthEntity();
+                    authEntity.setPosition(creatorAuthEntity.getPosition().equals("PPSS")?"PPSS":"HR");
                     authEntity.setUsername(username);
+                    authEntity.setStatus("active");
                     authEntity.setPassword(passwordEncoder.encode(password));
-                    authEntity.setPosition("PPSS");
-                    authEntity.setCreatedById(createdById);
-                    if(canCreateAccount){
-                        authEntity.setRoleId(1L);
-                    }
-                    else{
-                        authEntity.setRoleId(2L);
-                    }
+                    authEntity.setCreatedById(creatorAuthEntity.getId());
+                    //remove the condition where the created account can be superadmin. It is set to be admin only.
+//                    if(canCreateAccount){
+//                        authEntity.setRoleId(1L);
+//                    }
+//                    else{
+//                        authEntity.setRoleId(2L);
+//                    }
+                    authEntity.setRoleId(2L);
                     authRepository.save(authEntity);
 
                     UserProfileEntity userProfileEntity = new UserProfileEntity();
@@ -71,7 +79,12 @@ public class AccountServiceImp implements AccountService {
                     res.setMessage("Successfully add user with name " +userProfileModel.getFullName());
                     res.setStatusCode(200);
                     res.setSuccess(true);
-
+                   }
+                   else{
+                     res.setSuccess(false);
+                     res.setStatusCode(500);
+                     res.setMessage("Failed to create an account.");
+                   }
                 }else{
                     res.setSuccess(false);
                     res.setStatusCode(500);
@@ -79,7 +92,8 @@ public class AccountServiceImp implements AccountService {
 
                 }
 
-            }
+
+
             return res;
 
         } catch (RuntimeException e) {
@@ -95,40 +109,45 @@ public class AccountServiceImp implements AccountService {
     public ResponseModel editAccount(String username, String oldPassword, String password, Long id) {
         ResponseModel res = new ResponseModel();
         try {
-            Optional<UserProfileEntity> userOptional = userProfileRepository.findById(id);
+            System.out.println(oldPassword);
 
-            if (userOptional.isPresent()) {
-                UserProfileEntity userProfileEntity = userOptional.get();
-                Optional<AuthEntity> authEntityOptional = authRepository.findById(userProfileEntity.getUserId());
-                   if(authEntityOptional.isPresent()){
-                       AuthEntity authEntity = authEntityOptional.get();
-                       authEntity.setUsername(username);
-                       authEntity.setPassword(passwordEncoder.encode(password));
-                       authRepository.save(authEntity);
-                       res.setMessage("Account successfully updated");
-                       res.setStatusCode(200);
-                       res.setSuccess(true);
-                       return res;
-                   }
-                   else{
-                       res.setMessage("Account user id not found.");
-                       res.setStatusCode(200);
-                       res.setSuccess(true);
-                       return res;
-                   }
-
-
-            } else {
-                res.setMessage("User not found");
-                res.setStatusCode(500);
+                Optional<UserProfileEntity> userProfileEntityOptional = userProfileRepository.findById(id);
+                  if(userProfileEntityOptional.isEmpty()){
+                      res.setSuccess(false);
+                      res.setStatusCode(404);
+                      res.setMessage("Account not found. No user profile.");
+                      return res;
+                  }
+            UserProfileEntity userProfileEntity = userProfileEntityOptional.get();
+            Optional<AuthEntity> authEntityOptional = authRepository.findById(userProfileEntity.getUserId());
+            if(authEntityOptional.isEmpty()){
                 res.setSuccess(false);
-                ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+                res.setStatusCode(404);
+                res.setMessage("Account not found.");
                 return res;
             }
+            AuthEntity authEntity = authEntityOptional.get();
+            if(passwordEncoder.matches(oldPassword, authEntity.getPassword())){
+                authEntity.setUsername(username);
+                authEntity.setPassword(passwordEncoder.encode(password));
+                authRepository.save(authEntity);
+                res.setMessage("Account successfully updated");
+                res.setStatusCode(200);
+                res.setSuccess(true);
+            }
+            else{
+                res.setMessage("Account user not found. Please check your password.");
+                res.setStatusCode(404);
+                res.setSuccess(false);
+                return res;
+            }
+            return res;
+
+
         } catch (Exception e) {
                 res.setStatusCode(500);
                 res.setSuccess(false);
-              res.setMessage("\"An error occurred: \" + e.getMessage()");
+              res.setMessage("An error occurred: " + e.getMessage());
               return res;
         }
     }
