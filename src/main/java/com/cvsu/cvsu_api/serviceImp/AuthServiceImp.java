@@ -82,15 +82,14 @@ public class AuthServiceImp implements AuthService {
             authResponseModel.setSuccess(true);
             authResponseModel.setMessage("Successfully login.");
             authResponseModel.setToken(token);
-            return authResponseModel;
         }
         else{
             authResponseModel.setStatusCode(404);
             authResponseModel.setSuccess(true);
             authResponseModel.setMessage("Incorrect username or password. Please try again.");
             authResponseModel.setToken(null);
-            return authResponseModel;
         }
+        return authResponseModel;
 
 
     }
