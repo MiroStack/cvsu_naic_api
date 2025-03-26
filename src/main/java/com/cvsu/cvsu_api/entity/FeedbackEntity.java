@@ -23,4 +23,7 @@ public class FeedbackEntity {
 
     @Column(name = "rating")
     int rating;
+
+    @Column(name = "comment")
+    String comment;
 }

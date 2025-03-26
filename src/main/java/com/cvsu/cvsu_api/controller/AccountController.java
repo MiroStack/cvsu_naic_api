@@ -35,6 +35,7 @@ public class AccountController {
            ) {
        return new ResponseEntity<ResponseModel>(accountServiceImp.addAccount(firstname, middlename, lastname, username, password, createdById), HttpStatus.OK);
     }
+
     @PostMapping("/editAccount")
     public ResponseEntity<ResponseModel> editAccount(@RequestParam String username, @RequestParam String currentPassword, @RequestParam String password, @RequestParam Long id){
         return new ResponseEntity<ResponseModel>(accountServiceImp.editAccount(username, currentPassword, password, id), HttpStatus.OK);
