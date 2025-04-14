@@ -7,6 +7,5 @@ import java.util.List;
 
 public interface UserProfileRepository extends JpaRepository<UserProfileEntity, Long> {
     UserProfileEntity findByUserId(Long id);
-
-
+    UserProfileEntity findByEmployeeNo(String employeeNo);
 }

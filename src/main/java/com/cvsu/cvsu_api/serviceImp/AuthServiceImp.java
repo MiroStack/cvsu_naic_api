@@ -77,6 +77,7 @@ public class AuthServiceImp implements AuthService {
             userProfileModel.setPosition(authEntity.getPosition());
             userProfileModel.setUsername(authEntity.getUsername());
             userProfileModel.setStatus(authEntity.getStatus());
+            userProfileModel.setEmployeeNo(userProfileEntity.getEmployeeNo());
             String token = jwtUtil.generateToken(userProfileModel);
             authResponseModel.setStatusCode(200);
             authResponseModel.setSuccess(true);
@@ -85,7 +86,7 @@ public class AuthServiceImp implements AuthService {
         }
         else{
             authResponseModel.setStatusCode(404);
-            authResponseModel.setSuccess(true);
+            authResponseModel.setSuccess(false);
             authResponseModel.setMessage("Incorrect username or password. Please try again.");
             authResponseModel.setToken(null);
         }

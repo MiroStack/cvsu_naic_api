@@ -31,6 +31,7 @@ public class JwtUtil {
                 .claim("position", user.getPosition())
                 .claim("username", user.getUsername())
                 .claim("password", user.getPassword())
+                .claim("employeeNo", user.getEmployeeNo())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(SECRET_KEY, SignatureAlgorithm.HS256)

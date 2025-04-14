@@ -10,16 +10,19 @@ import com.cvsu.cvsu_api.repository.UserProfileRepository;
 import com.cvsu.cvsu_api.repository.UserRoleRepository;
 import com.cvsu.cvsu_api.service.AccountService;
 import jakarta.persistence.Entity;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
 public class AccountServiceImp implements AccountService {
+
     @Autowired
     private AuthRepository authRepository;
 
@@ -31,6 +34,8 @@ public class AccountServiceImp implements AccountService {
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+
+    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @Override
     public ResponseModel addAccount(String firstname, String middlename, String lastname, String username, String password, Long createdById) {
@@ -66,6 +71,14 @@ public class AccountServiceImp implements AccountService {
                     userProfileEntity.setMiddlename(middlename);
                     userProfileEntity.setLastname(lastname);
                     userProfileEntity.setUserId(authEntity.getId());
+                    LocalDate today = LocalDate.now();
+                    int year = today.getYear();
+                    int month = today.getMonthValue();
+                    int day = today.getDayOfMonth();
+                    String monthTxt = month < 10? "0"+month : String.valueOf(month);
+                    String dayTxt = day < 10 ? "0"+day : String.valueOf(day);
+                    String userIdTxt = authEntity.getId() < 10? "0"+authEntity.getId():String.valueOf(authEntity.getId());
+                    userProfileEntity.setEmployeeNo(year+monthTxt+dayTxt+userIdTxt);
                     userProfileRepository.save(userProfileEntity);
 
                     UserRoleEntity userRoleEntity = new UserRoleEntity();
@@ -91,8 +104,6 @@ public class AccountServiceImp implements AccountService {
                     res.setMessage("You are not allowed to create new account.");
 
                 }
-
-
 
             return res;
 
@@ -149,6 +160,166 @@ public class AccountServiceImp implements AccountService {
                 res.setSuccess(false);
               res.setMessage("An error occurred: " + e.getMessage());
               return res;
+        }
+    }
+
+    @Override
+    public ResponseModel addRecoveryPassword(Long id, String password, String pinPassword) {
+
+        ResponseModel res = new ResponseModel();
+        try{
+           Optional<UserProfileEntity> userProfileEntityOptional = userProfileRepository.findById(id);
+           if(userProfileEntityOptional.isPresent()){
+               UserProfileEntity userProfileEntity = userProfileEntityOptional.get();
+               Optional<AuthEntity> authEntityOptional = authRepository.findById(userProfileEntity.getUserId());
+               if(authEntityOptional.isPresent()){
+
+                   AuthEntity authEntity = authEntityOptional.get();
+                   if(!encoder.matches(password, authEntity.getPassword())){
+                       res.setMessage("Incorrect password! Please try again.");
+                       res.setSuccess(false);
+                       res.setStatusCode(404);
+                       return res;
+                   }
+                   if(authEntity.getPinPassword() != null){
+                       res.setMessage("Failed to add recovery password. You already set your pin password for your account.");
+                       res.setSuccess(false);
+                       res.setStatusCode(405);
+                       return res;
+                   }
+                   authEntity.setPinPassword(pinPassword);
+                   authRepository.save(authEntity);
+                   res.setMessage("Recovery password successfully saved");
+                   res.setSuccess(true);
+                   res.setStatusCode(200);
+
+
+               }else{
+                   res.setMessage("User id not found.");
+                   res.setStatusCode(404);
+                   res.setSuccess(false);
+
+               }
+           }
+           else{
+               res.setMessage("Id not found.");
+               res.setStatusCode(404);
+               res.setSuccess(false);
+           }
+
+           return res;
+        }catch(Exception e){
+            res.setMessage("An error occurred: "+e);
+            res.setStatusCode(500);
+            res.setSuccess(false);
+            return res;
+
+        }
+    }
+
+    @Override
+    public ResponseModel editRecoveryPassword(Long id,  String password, String newPinPassword) {
+        ResponseModel res = new ResponseModel();
+        try{
+            Optional<UserProfileEntity> userProfileEntityOptional = userProfileRepository.findById(id);
+            if(userProfileEntityOptional.isPresent()){
+                UserProfileEntity userProfileEntity = userProfileEntityOptional.get();
+                Optional<AuthEntity> authEntityOptional = authRepository.findById(userProfileEntity.getUserId());
+                if(authEntityOptional.isPresent()){
+                    AuthEntity authEntity = authEntityOptional.get();
+                    if(!encoder.matches(password, authEntity.getPassword())){
+                        res.setMessage("Incorrect password! Please try again.");
+                        res.setStatusCode(404);
+                        res.setSuccess(false);
+                        return res;
+                    }
+                    authEntity.setPinPassword(newPinPassword);
+                    authRepository.save(authEntity);
+                    res.setMessage("Recovery password successfully updated");
+                    res.setSuccess(true);
+                    res.setStatusCode(200);
+
+                }
+                else{
+                    res.setMessage("User id not found.");
+                    res.setSuccess(false);
+                    res.setStatusCode(404);
+                }
+            }
+            else{
+                res.setMessage("Id not found.");
+                res.setSuccess(false);
+                res.setStatusCode(404);
+            }
+
+            return res;
+        } catch (Exception e) {
+            res.setMessage("An error occurred: "+e);
+            res.setStatusCode(500);
+            res.setSuccess(false);
+            return res;
+        }
+    }
+
+    @Override
+    public ResponseModel recoverPassword(String employeeNo, String pinPassword, String newPassword) {
+        ResponseModel res = new ResponseModel();
+        try{
+           UserProfileEntity userProfileEntity = userProfileRepository.findByEmployeeNo(employeeNo);
+           if(userProfileEntity == null){
+               res.setMessage("User id not found.");
+               res.setSuccess(false);
+               res.setStatusCode(404);
+               return res;
+           }
+           Long userId = userProfileEntity.getUserId();
+           Optional<AuthEntity> authEntityOptional = authRepository.findById(userId);
+           if(authEntityOptional.isPresent()){
+               AuthEntity authEntity = authEntityOptional.get();
+               if(!pinPassword.equals(authEntity.getPinPassword())){
+                   res.setMessage("Incorrect pin password! Please try again.");
+                   res.setStatusCode(404);
+                   res.setSuccess(false);
+                   return res;
+               }
+               authEntity.setPassword(passwordEncoder.encode(newPassword));
+               authRepository.save(authEntity);
+               res.setMessage("Password successfully updated.");
+               res.setSuccess(true);
+               res.setStatusCode(200);
+           }
+            return res;
+
+        } catch (Exception e) {
+            res.setMessage("An error occurred: "+e);
+            res.setStatusCode(500);
+            res.setSuccess(false);
+            return res;
+        }
+
+    }
+
+    @Override
+    public ResponseModel searchEmployee(String employeeNo) {
+        ResponseModel res = new ResponseModel();
+        try{
+            UserProfileEntity entity = userProfileRepository.findByEmployeeNo(employeeNo);
+
+            if(entity == null){
+                res.setMessage("Can't find the employee with the given employee number.");
+                res.setStatusCode(404);
+                res.setSuccess(false);
+                return res;
+            }
+            res.setMessage("Successfully find the employee with the given employee number.");
+            res.setStatusCode(200);
+            res.setSuccess(true);
+            return res;
+        } catch (Exception e) {
+            res.setMessage("An error occurred: "+e);
+            res.setStatusCode(500);
+            res.setSuccess(false);
+            return res;
         }
     }
 }

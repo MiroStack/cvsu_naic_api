@@ -25,6 +25,17 @@ public class AuthEntity {
     @Column(name = "status")
     private String status;
 
+    @Column(name = "pinPassword")
+    private String pinPassword;
+
+    public String getPinPassword() {
+        return pinPassword;
+    }
+
+    public void setPinPassword(String pinPassword) {
+        this.pinPassword = pinPassword;
+    }
+
     public String getStatus() {
         return status;
     }

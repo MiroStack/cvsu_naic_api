@@ -1,5 +1,7 @@
 package com.cvsu.cvsu_api.controller;
 
+import com.cvsu.cvsu_api.model.PinModel;
+import com.cvsu.cvsu_api.model.RecoveryPasswordModel;
 import com.cvsu.cvsu_api.model.ResponseModel;
 import com.cvsu.cvsu_api.model.UserProfileModel;
 import com.cvsu.cvsu_api.serviceImp.AccountServiceImp;
@@ -38,5 +40,40 @@ public class AccountController {
     @PostMapping("/editAccount")
     public ResponseEntity<ResponseModel> editAccount(@RequestParam String username, @RequestParam String currentPassword, @RequestParam String password, @RequestParam Long id){
         return new ResponseEntity<ResponseModel>(accountServiceImp.editAccount(username, currentPassword, password, id), HttpStatus.OK);
+    }
+
+    @PostMapping("/addRecoveryPassword")
+    public ResponseEntity<ResponseModel> addRecoveryPass(@RequestBody PinModel pinModel){
+        try{
+            return new ResponseEntity<>(accountServiceImp.addRecoveryPassword(pinModel.getUserId(), pinModel.getPassword(), pinModel.getPinPassword()), HttpStatus.OK);
+        }catch(Exception e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+    @PostMapping("/editRecoveryPassword")
+    public ResponseEntity editRecoveryPass(@RequestBody PinModel pinModel){
+        try{
+            return new ResponseEntity<>(accountServiceImp.editRecoveryPassword(pinModel.getUserId(), pinModel.getPassword(), pinModel.getPinPassword()), HttpStatus.OK);
+        }catch(Exception e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/recoverPassword")
+    public ResponseEntity<ResponseModel> recoverPassword(@RequestBody RecoveryPasswordModel recoveryPasswordModel){
+        try{
+            return new ResponseEntity<>(accountServiceImp.recoverPassword(recoveryPasswordModel.getEmployeeNo(), recoveryPasswordModel.getPinPassword(), recoveryPasswordModel.getNewPassword()), HttpStatus.OK);
+        }catch(Exception e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/findMyAccount")
+    public ResponseEntity<ResponseModel> findMyAccount(@RequestParam String employeeNo){
+        try{
+            return new ResponseEntity<>(accountServiceImp.searchEmployee(employeeNo), HttpStatus.OK);
+        }catch(Exception e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 }

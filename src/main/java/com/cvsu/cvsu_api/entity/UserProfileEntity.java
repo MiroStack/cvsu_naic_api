@@ -22,6 +22,17 @@ public class UserProfileEntity {
     @Column(name = "user_id")
     private Long userId;
 
+    public String getEmployeeNo() {
+        return employeeNo;
+    }
+
+    public void setEmployeeNo(String employeeNo) {
+        this.employeeNo = employeeNo;
+    }
+
+    @Column(name = "employee_no")
+    private String employeeNo;
+
     public Long getId() {
         return id;
     }

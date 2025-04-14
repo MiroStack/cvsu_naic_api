@@ -58,6 +58,7 @@ public class AuthController {
         String position = claims.get("position", String.class);
         Long id = claims.get("id", Long.class);
         String username = claims.get("username", String.class);
+        String employeeNo = claims.get("employeeNo", String.class);
 
 
 
@@ -68,6 +69,7 @@ public class AuthController {
         userInfo.put("position", position);
         userInfo.put("id", id);
         userInfo.put("username", username);
+        userInfo.put("employeeNo", employeeNo);
         return ResponseEntity.ok(userInfo);
     }
 

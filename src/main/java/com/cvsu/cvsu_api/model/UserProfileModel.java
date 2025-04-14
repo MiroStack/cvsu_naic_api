@@ -65,6 +65,16 @@ public class UserProfileModel {
         this.password = password;
     }
 
+
+    public String getEmployeeNo() {
+        return employeeNo;
+    }
+
+    public void setEmployeeNo(String employeeNo) {
+        this.employeeNo = employeeNo;
+    }
+
+
     String password;
      String username;
      String roleName;
@@ -72,6 +82,9 @@ public class UserProfileModel {
      Long id;
      String position;
      String status;
+
+    String employeeNo;
+
 
 
 }
