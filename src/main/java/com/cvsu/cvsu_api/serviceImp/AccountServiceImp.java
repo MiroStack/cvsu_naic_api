@@ -181,10 +181,10 @@ public class AccountServiceImp implements AccountService {
                        res.setStatusCode(404);
                        return res;
                    }
-                   if(authEntity.getPinPassword() != null){
+                   if(authEntity.getPinPassword() != null && !authEntity.getPinPassword().trim().isEmpty()){
                        res.setMessage("Failed to add recovery password. You already set your pin password for your account.");
                        res.setSuccess(false);
-                       res.setStatusCode(405);
+                       res.setStatusCode(409);
                        return res;
                    }
                    authEntity.setPinPassword(pinPassword);
