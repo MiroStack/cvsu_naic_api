@@ -3,6 +3,8 @@ package com.cvsu.cvsu_api.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 @Entity
 @Table(name = "tbl_feedback")
@@ -21,8 +23,8 @@ public class FeedbackEntity {
     @Column(name = "purpose")
     String purpose;
 
-    @Column(name = "rating")
-    double rating;
+    @Column(precision = 3, scale = 1, name = "rating")
+    BigDecimal rating;
 
     @Column(name = "comment")
     String comment;
