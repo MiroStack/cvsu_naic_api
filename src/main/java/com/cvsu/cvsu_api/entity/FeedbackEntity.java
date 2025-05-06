@@ -22,5 +22,8 @@ public class FeedbackEntity {
     String purpose;
 
     @Column(name = "rating")
-    int rating;
+    double rating;
+
+    @Column(name = "comment")
+    String comment;
 }
