@@ -23,7 +23,7 @@ public class FeedbackEntity {
     @Column(name = "purpose")
     String purpose;
 
-    @Column(precision = 3, scale = 1, name = "rating")
+    @Column(precision = 4, scale = 2, name = "rating")
     BigDecimal rating;
 
     @Column(name = "comment")
